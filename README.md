@@ -11,6 +11,6 @@
 
 Web Spammer Analyzer
 
-So in this project we develop an apps to analyze wheter a websites is spam website or note depends on it's spam score
+So in this project we develop an apps to analyze whether a websites is spam website or not depends on it's spam score
 
 
