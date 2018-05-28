@@ -9,7 +9,7 @@
 
 ### Topic & Description
 
-Phishing Websites Analyzer
+Phishing Websites Classifier
 
 So in this project we develop an apps to analyze whether a websites is a phishing website or not
 
