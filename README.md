@@ -9,8 +9,11 @@
 
 ### Topic & Description
 
-Web Spammer Analyzer
+Phishing Websites Analyzer
 
-So in this project we develop an apps to analyze whether a websites is spam website or not depends on it's spam score
+So in this project we develop an apps to analyze whether a websites is a phishing website or not
+
+Dataset source :
+https://archive.ics.uci.edu/ml/datasets/phishing+websites
 
 
