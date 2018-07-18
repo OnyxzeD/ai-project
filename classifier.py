@@ -109,6 +109,40 @@ def countGnb(newData):
     else:
         print('indentified as secure site')
 
+# f 1
+def ipaddress():
+    check = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",parsed.netloc)
+    if check:
+        temp.append(-1)
+    else:
+        temp.append(1)
+
+# f 2
+def urllength():
+    if (len(sample_url)) < 54:
+        temp.append(1)
+    elif (len(sample_url)) >= 54 and (len(sample_url)) <= 75:
+        temp.append(0)
+    else:
+        if "google" in sample_url or "duckduckgo" in sample_url:
+            temp.append(1)
+        else:
+            temp.append(-1)
+
+# f 3
+def symbol():
+    if '@' in parsed.netloc:
+        temp.append(-1)
+    else:
+        temp.append(1)
+
+# f 4
+def redirect():
+    if '//' in parsed.path:
+        temp.append(-1)
+    else:
+        temp.append(1)
+
 # f 5
 def prefixsufix():
     if '-' in parsed.netloc:
@@ -230,6 +264,11 @@ print('Loaded', len(data),'rows data')
 sample_url = input("INSERT URL  : ")
 parsed = urlparse(sample_url)
 
+
+ipaddress()
+urllength()
+symbol()
+redirect()
 prefixsufix()
 portscan()
 httpstoken()
