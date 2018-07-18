@@ -22,6 +22,93 @@ def loadCsv(filename):
         data.append([int(i[x]) for x in range(len(i)-1)])
         target.append(int(i[len(i)-1]))
 
+def countGnb(newData):
+    secure = 0
+    phishing = 0
+    # get total class
+    indexes = []
+    sc = []
+    ph = []
+    for i in range(len(target)):
+        if target[i] == 1:
+            sc.append(i)
+            secure+=1
+        else:
+            ph.append(i)
+            phishing+=1
+
+    indexes.append(sc)
+    indexes.append(ph)
+
+    # get features
+    features = []
+    for x in range(len(data[0])):
+        temp = []
+        for row in data:
+            if (row[x] in temp) == False:
+                temp.append(row[x])
+
+        temp.sort()
+        features.append(temp)
+
+    # get score for each feature
+    scScore = []
+    phScore = []
+    ind = 0;
+    for i in features:
+        temp = []
+        temp2 = []
+        for j in i:
+            total = 0
+            total2 = 0
+            for x in sc:
+                # print("if data[",x,"][",ind,"]==",j," then append it")
+                if data[x][ind] == j:
+                    total += 1
+
+            for y in ph:
+                if data[y][ind] == j:
+                    total2 += 1
+
+            temp.append(total)
+            temp2.append(total2)
+
+        scScore.append(temp)
+        phScore.append(temp2)
+        ind+=1
+    print("Total Secure site :", secure, "/", len(data))
+    print("Total Phishing site :", phishing, "/", len(data))
+    # print(indexes)
+    # print(features)
+    # print(scScore)
+    # print(phScore)
+    pyes = []
+    pno = []
+    for i in range(len(newData[0])):
+        ind = features[i].index(newData[0][i])
+        pyes.append(scScore[i][ind])
+        pno.append(phScore[i][ind])
+
+    print(pyes)
+    print(pno)
+
+    total_yes = 1 * (secure / len(data));
+    total_no = 1 * (phishing / len(data));
+
+    for i in pyes:
+        total_yes *= (i/secure)
+
+    for i in pno:
+        total_no *= (i/phishing)
+
+    print(total_yes)
+    print(total_no)
+    print("Predicted by manual gnb : ")
+    if total_no > total_yes:
+        print('indentified as phising site')
+    else:
+        print('indentified as secure site')
+
 # f 5
 def prefixsufix():
     if '-' in parsed.netloc:
@@ -148,3 +235,15 @@ portscan()
 httpstoken()
 checkWhois()
 googleindex()
+
+
+new3.append(temp)
+
+countGnb(new3)
+# print(new3)
+# print("\nPredicted by scikit gnb : ")
+# pred = gnb.fit(data, target).predict(new3)
+# if pred[0] == -1:
+#     print('indentified as phising site')
+# else:
+#     print('indentified as secure site')
