@@ -1,48 +1,29 @@
 from sklearn.naive_bayes import GaussianNB
 from datetime import datetime, date
-import test
+from urllib.parse import urlencode, urlparse
+from bs4 import BeautifulSoup
+import whois
+import re
 import socket
 import sys
 import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urlencode
 
 gnb = GaussianNB()
-data = [
-    [-1, 1, 1, -1, -1, -1, 1, -1, -1, -1, -1, -1, 1],
-    [1, 1, 1, 1, -1, 1, 1, -1, 1, -1, -1, 0, 1],
-    [1, 0, 1, 1, -1, -1, 1, -1, -1, 1, -1, 1, 1],
-    [1, 0, 1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 1],
-    [1, 0, 1, 1, -1, 1, 1, 1, 1, -1, -1, 0, 1],
-    [-1, 0, 1, -1, -1, 1, 1, -1, -1, 1, 1, 1, 1],
-    [1, 0, 1, 1, -1, -1, 1, 1, -1, 1, -1, -1, 1],
-    [1, 0, 1, 1, -1, -1, 1, -1, 1, -1, -1, 0, 1],
-    [1, 0, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1],
-    [1, 1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 0, 1],
-    [1, 1, 1, 1, -1, 1, 1, 1, -1, -1, 1, 1, 1],
-    [1, 1, 1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1],
-    [-1, 1, 1, -1, -1, 0, 1, -1, 1, 1, -1, -1, 1],
-    [1, 1, 1, 1, -1, -1, 1, 1, 1, -1, -1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, 1, 1],
-    [1, -1, -1, 1, -1, 0, 1, 1, 1, 1, -1, -1, 1],
-    [1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, 0, 1],
-    [1, -1, 1, 1, -1, 0, -1, 1, -1, -1, 1, 1, 1],
-    [1, 1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1],
-    [1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, 0, 1],
-]
-target = [-1, -1, -1, -1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, 1, 1]
+data = []
+target = []
+new3 = []
+temp = []
 
-# legitimate
-new = [[1, 0, 1, 1, -1, 1, 1, 1, -1, -1, 1, 1, 1]]
-#phishing
-new2 = [[1, -1, 1, 1, -1, -1, 1, -1, -1, 1, 1, 0, 1]]
+# f 5
+def prefixsufix():
+    if '-' in parsed.netloc:
+        temp.append(-1)
+    else:
+        temp.append(1)
 
-sample_url = input("INSERT URL  : ")
-
+# f 6
 def portscan():
-    remoteServerIP = socket.gethostbyname(sample_url)
-    status1 = ""
-    status2 = ""
+    remoteServerIP = socket.gethostbyname(parsed.netloc)
     print("-" * 60)
     print("Please Wait, Scanning Remote Host", remoteServerIP)
     print("-" * 60)
@@ -56,11 +37,9 @@ def portscan():
             result = sock.connect_ex((remoteServerIP, port))
             if result == 0:
                 print("Port {}  :        Open".format(port))
-                status1 = "open"
                 open_port.append(port)
             else:
                 print("Port {}  :        Close".format(port))
-                status2 = "close"
     except KeyboardInterrupt:
         print("You Pressed Ctrl+C")
         sys.exit()
@@ -74,13 +53,20 @@ def portscan():
     t2 = datetime.now()
     total = t2 - t1
     if open_port <= port_open:
-        port_scan = 1
+        temp.append(1)
     else:
-        port_scan = -1;
+        temp.append(-1)
     print(open_port)
-    print(port_scan)
     print("Scanning Completed in : ", total)
 
+# f 7
+def httpstoken():
+    if "https" in parsed.netloc:
+        temp.append(-1)
+    else:
+        temp.append(1)
+
+# f 11
 def googleindex():
     proxies = {
         'https': 'https://localhost:8123',
@@ -96,12 +82,24 @@ def googleindex():
     try:
         check = soup.find(id="rso").find("div").find("div").find("h3").find("a")
         href = check['href']
-        print(sample_url + " is indexed!")
-        print(1)
+        # print(sample_url + " is indexed!")
+        temp.append(1)
     except AttributeError:
-        print(sample_url + " is NOT indexed!")
-        print(-1)
+        # print(sample_url + " is NOT indexed!")
+        temp.append(-1)
 
-googleindex()
+filename = 'dataset.csv'
+# legitimate
+new = [[1,1,1,1,1,1,-1,1,1,-1,1]]
+#phishing
+new2 = [[1,0,-1,-1,-1,1,-1,1,1,-1,-1]]
+
+
+# https://searchengineland.com/check-urls-indexed-google-using-python-259773
+sample_url = input("INSERT URL  : ")
+parsed = urlparse(sample_url)
+
+prefixsufix()
 portscan()
-
+httpstoken()
+googleindex()
