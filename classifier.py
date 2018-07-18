@@ -14,6 +14,14 @@ target = []
 new3 = []
 temp = []
 
+import csv
+# load csv data
+def loadCsv(filename):
+    lines = csv.reader(open(filename, "r"))
+    for i in lines:
+        data.append([int(i[x]) for x in range(len(i)-1)])
+        target.append(int(i[len(i)-1]))
+
 # f 5
 def prefixsufix():
     if '-' in parsed.netloc:
@@ -66,6 +74,40 @@ def httpstoken():
     else:
         temp.append(1)
 
+# f 8
+def checkWhois():
+    w = whois.whois(sample_url)
+    if w.domain_name == None and w.registrar == None:
+        # print('abnormal') f 8
+        temp.append(-1)
+    else:
+        temp.append(1)
+
+        result = isinstance(w.creation_date, list)
+        if result == False:
+            r_date = w.creation_date
+        else:
+            r_date = w.creation_date[0]
+
+        # age f 9
+        date = r_date.strftime('%Y-%m-%d')
+        date.split(" ")
+
+        reg_date = datetime.strptime(date, "%Y-%m-%d")
+        today = datetime.today()
+        age = today.year - reg_date.year - ((today.month, today.day) < (reg_date.month, reg_date.day))
+        if age > 1:
+            temp.append(1)
+        else:
+            temp.append(-1)
+
+        #dns record f 10
+        record = isinstance(w.name_servers, list)
+        if result == False:
+            temp.append(-1)
+        else:
+            temp.append(1)
+
 # f 11
 def googleindex():
     proxies = {
@@ -94,6 +136,8 @@ new = [[1,1,1,1,1,1,-1,1,1,-1,1]]
 #phishing
 new2 = [[1,0,-1,-1,-1,1,-1,1,1,-1,-1]]
 
+loadCsv(filename)
+print('Loaded', len(data),'rows data')
 
 # https://searchengineland.com/check-urls-indexed-google-using-python-259773
 sample_url = input("INSERT URL  : ")
@@ -102,4 +146,5 @@ parsed = urlparse(sample_url)
 prefixsufix()
 portscan()
 httpstoken()
+checkWhois()
 googleindex()
